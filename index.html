@@ -4,90 +4,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NexusShare | Secure File Management</title>
+    <title>NexusShare | Secure Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script>
-        // Tailwind Dark Mode Config
-        tailwind.config = {
-            darkMode: 'class',
-        }
+        tailwind.config = { darkMode: 'class' }
     </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; transition: background-color 0.3s ease; }
+        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255, 255, 255, 0.2); }
+        .dark .glass { background: rgba(17, 24, 39, 0.95); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .sidebar-link:hover { background: rgba(99, 102, 241, 0.05); color: #4f46e5; }
+        .active-link { background: #eef2ff; color: #4f46e5; border-right: 4px solid #4f46e5; }
+        .dark .active-link { background: rgba(79, 70, 229, 0.1); color: #818cf8; border-right: 4px solid #818cf8; }
+        .modal-enter { animation: modalFade 0.3s ease-out forwards; }
+        @keyframes modalFade { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #374151; }
 
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            transition: background-color 0.3s ease;
-        }
-
-        .glass {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .dark .glass {
-            background: rgba(17, 24, 39, 0.95);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-
-        .sidebar-link:hover {
-            background: rgba(99, 102, 241, 0.05);
-            color: #4f46e5;
-        }
-
-        .active-link {
-            background: #eef2ff;
-            color: #4f46e5;
-            border-right: 4px solid #4f46e5;
-        }
-
-        .dark .active-link {
-            background: rgba(79, 70, 229, 0.1);
-            color: #818cf8;
-            border-right: 4px solid #818cf8;
-        }
-
-        .modal-enter {
-            animation: modalFade 0.3s ease-out forwards;
-        }
-
-        @keyframes modalFade {
-            from {
-                opacity: 0;
-                transform: scale(0.95) translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
-        }
-
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #e2e8f0;
-            border-radius: 10px;
-        }
-
-        .dark .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #374151;
-        }
-
-        #uploadModal.hidden {
-            display: none;
+        /* Storage Circle Styles */
+        .storage-circle-container { position: relative; width: 160px; height: 160px; margin: 0 auto; }
+        .circle-svg { transform: rotate(-90deg); }
+        .circle-bg { fill: none; stroke: #f1f5f9; stroke-width: 12; }
+        .dark .circle-bg { stroke: #1e293b; }
+        .circle-progress { 
+            fill: none; 
+            stroke: url(#storageGradient); 
+            stroke-width: 12; 
+            stroke-linecap: round; 
+            stroke-dasharray: 440; 
+            /* 65% of 440 = 286. Dashoffset = 440 - 286 = 154 */
+            stroke-dashoffset: 154; 
+            transition: stroke-dashoffset 1s ease-in-out;
         }
     </style>
 </head>
@@ -103,47 +55,32 @@
         </div>
 
         <div class="flex items-center space-x-6">
-            <button onclick="toggleTheme()"
-                class="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:text-indigo-600 transition-all flex items-center justify-center">
+            <button onclick="toggleTheme()" class="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:text-indigo-600 transition-all flex items-center justify-center">
                 <i id="themeIcon" class="fas fa-moon"></i>
             </button>
-
             <div class="hidden md:flex relative">
-                <input type="text" placeholder="Search files..."
-                    class="pl-10 pr-4 py-2 bg-gray-100 dark:bg-gray-800 border-transparent rounded-full text-sm focus:bg-white dark:focus:bg-gray-700 focus:ring-2 focus:ring-indigo-500 w-64 transition-all outline-none dark:text-gray-200">
+                <input type="text" placeholder="Search files..." class="pl-10 pr-4 py-2 bg-gray-100 dark:bg-gray-800 border-transparent rounded-full text-sm focus:bg-white dark:focus:bg-gray-700 focus:ring-2 focus:ring-indigo-500 w-64 transition-all outline-none dark:text-gray-200">
                 <i class="fas fa-search absolute left-4 top-2.5 text-gray-400"></i>
             </div>
-
             <div class="relative">
-                <button onclick="toggleDropdown()" id="profileBtn"
-                    class="flex items-center space-x-3 focus:outline-none group">
-                    <div
-                        class="h-10 w-10 rounded-full gradient-bg flex items-center justify-center text-white font-bold shadow-md border-2 border-white dark:border-gray-800 transition-transform group-hover:scale-105">
-                        A
-                    </div>
+                <button onclick="toggleDropdown()" id="profileBtn" class="flex items-center space-x-3 focus:outline-none group">
+                    <div class="h-10 w-10 rounded-full gradient-bg flex items-center justify-center text-white font-bold shadow-md border-2 border-white dark:border-gray-800 transition-transform group-hover:scale-105">A</div>
                     <div class="hidden md:block text-left">
                         <p class="text-xs font-bold text-gray-800 dark:text-white leading-none">Ashwin</p>
                         <p class="text-[10px] text-gray-400 font-medium">Standard User</p>
                     </div>
-                    <i
-                        class="fas fa-chevron-down text-[10px] text-gray-400 group-hover:text-indigo-500 transition-colors"></i>
+                    <i class="fas fa-chevron-down text-[10px] text-gray-400 group-hover:text-indigo-500 transition-colors"></i>
                 </button>
-
-                <div id="profileDropdown"
-                    class="hidden absolute right-0 mt-3 w-56 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-700 overflow-hidden py-2 z-50 modal-enter">
+                <div id="profileDropdown" class="hidden absolute right-0 mt-3 w-56 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-700 overflow-hidden py-2 z-50 modal-enter">
                     <div class="px-4 py-3 border-b border-gray-50 dark:border-gray-700">
                         <p class="text-xs text-gray-400 font-bold uppercase tracking-widest">Account</p>
                         <p class="text-sm font-bold text-gray-700 dark:text-gray-200 truncate">ashwin@example.com</p>
                     </div>
-
-                    <a href="profile.html"
-                        class="flex items-center px-4 py-3 text-sm text-gray-600 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 transition">
+                    <a href="profile.html" class="flex items-center px-4 py-3 text-sm text-gray-600 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 transition">
                         <i class="fas fa-user-circle mr-3 opacity-50"></i> My Profile
                     </a>
-
                     <div class="border-t border-gray-50 dark:border-gray-700 mt-2">
-                        <a href="login.html"
-                            class="flex items-center px-4 py-3 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 transition font-bold">
+                        <a href="login.html" class="flex items-center px-4 py-3 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 transition font-bold">
                             <i class="fas fa-sign-out-alt mr-3"></i> Logout
                         </a>
                     </div>
@@ -153,7 +90,6 @@
     </nav>
 
     <div class="flex flex-1">
-
 <aside class="w-64 bg-white dark:bg-gray-900 border-r border-gray-100 dark:border-gray-800 hidden lg:flex flex-col sticky top-[73px] h-[calc(100vh-73px)]">
     
     <div class="px-6 py-6">
@@ -195,7 +131,6 @@
                     class="sidebar-link flex items-center px-4 py-2.5 text-gray-500 dark:text-gray-400 font-medium transition rounded-xl">
                     <i class="fas fa-trash-alt mr-3 text-lg"></i> Bin
                 </a>
-                
             </a>
         </nav>
     </div>
@@ -214,61 +149,100 @@
     </div>
 </aside>
 
-        <main class="flex-1 p-8 lg:p-12">
+        <main class="flex-1 p-8 lg:p-12 overflow-y-auto custom-scrollbar">
             <header class="mb-10">
-                <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">Welcome back, Ashwin
-                </h1>
-                <p class="text-gray-500 dark:text-gray-400">Staging multiple files is now faster and more secure.</p>
+                <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">System Overview</h1>
+                <p class="text-gray-500 dark:text-gray-400">Welcome back, Ashwin. Here is what's happening in your vault.</p>
             </header>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-[2rem] border border-gray-100 dark:border-gray-700 shadow-sm">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600">
+                            <i class="fas fa-file-alt text-xl"></i>
+                        </div>
+                        <span class="text-[10px] font-bold text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-1 rounded-lg">+5 today</span>
+                    </div>
+                    <p class="text-[10px] uppercase tracking-widest text-gray-400 font-extrabold">Total Files</p>
+                    <h3 class="text-2xl font-black text-gray-800 dark:text-white mt-1">1,284</h3>
+                </div>
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-[2rem] border border-gray-100 dark:border-gray-700 shadow-sm">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="w-12 h-12 rounded-2xl bg-purple-50 dark:bg-purple-900/30 flex items-center justify-center text-purple-600">
+                            <i class="fas fa-link text-xl"></i>
+                        </div>
+                        <span class="text-[10px] font-bold text-purple-500 bg-purple-50 dark:bg-purple-500/10 px-2 py-1 rounded-lg">Active</span>
+                    </div>
+                    <p class="text-[10px] uppercase tracking-widest text-gray-400 font-extrabold">Shared Links</p>
+                    <h3 class="text-2xl font-black text-gray-800 dark:text-white mt-1">42</h3>
+                </div>
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-[2rem] border border-gray-100 dark:border-gray-700 shadow-sm">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="w-12 h-12 rounded-2xl bg-orange-50 dark:bg-orange-900/30 flex items-center justify-center text-orange-600">
+                            <i class="fas fa-eye text-xl"></i>
+                        </div>
+                        <span class="text-[10px] font-bold text-orange-500 bg-orange-50 dark:bg-orange-500/10 px-2 py-1 rounded-lg">High</span>
+                    </div>
+                    <p class="text-[10px] uppercase tracking-widest text-gray-400 font-extrabold">Link Views</p>
+                    <h3 class="text-2xl font-black text-gray-800 dark:text-white mt-1">8.4k</h3>
+                </div>
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-[2rem] border border-gray-100 dark:border-gray-700 shadow-sm">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600">
+                            <i class="fas fa-shield-alt text-xl"></i>
+                        </div>
+                        <span class="text-[10px] font-bold text-blue-500 bg-blue-50 dark:bg-blue-500/10 px-2 py-1 rounded-lg">Secure</span>
+                    </div>
+                    <p class="text-[10px] uppercase tracking-widest text-gray-400 font-extrabold">Security Score</p>
+                    <h3 class="text-2xl font-black text-gray-800 dark:text-white mt-1">98%</h3>
+                </div>
+            </div>
 
             <div class="grid grid-cols-1 xl:grid-cols-3 gap-10">
                 <div class="xl:col-span-2 space-y-10">
-
-                    <div id="dropZone"
-                        class="border-2 border-dashed border-indigo-200 dark:border-indigo-900 rounded-[2.5rem] p-16 text-center bg-white dark:bg-gray-800 hover:border-indigo-400 hover:bg-indigo-50/30 dark:hover:bg-indigo-900/10 transition-all cursor-pointer group relative">
-                        <div
-                            class="bg-indigo-50 dark:bg-indigo-900/30 w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:bg-indigo-100 dark:group-hover:bg-indigo-900 transition-all">
+                    <div id="dropZone" class="border-2 border-dashed border-indigo-200 dark:border-indigo-900 rounded-[2.5rem] p-16 text-center bg-white dark:bg-gray-800 hover:border-indigo-400 hover:bg-indigo-50/30 transition-all cursor-pointer group relative">
+                        <div class="bg-indigo-50 dark:bg-indigo-900/30 w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-all">
                             <i class="fas fa-cloud-upload-alt text-indigo-500 text-3xl"></i>
                         </div>
-                        <h3 class="text-xl font-bold text-gray-800 dark:text-white">Drag & drop files here</h3>
-                        <p class="text-gray-400 mt-2">Upload multiple files at once. Max 100MB each.</p>
-                        <button
-                            class="mt-6 text-sm font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/50 px-6 py-2 rounded-full hover:bg-indigo-100 transition">Browse
-                            Files</button>
+                        <h3 class="text-xl font-bold text-gray-800 dark:text-white">Quick Staging Area</h3>
+                        <p class="text-gray-400 mt-2">Drag files to prepare them for secure sharing.</p>
+                        <button class="mt-6 text-sm font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/50 px-6 py-2 rounded-full">Browse Device</button>
                     </div>
 
-                    <div
-                        class="bg-white dark:bg-gray-800 rounded-[2rem] shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+                    <div class="bg-white dark:bg-gray-800 rounded-[2rem] shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
                         <div class="p-8 border-b border-gray-50 dark:border-gray-700 flex justify-between items-center">
-                            <h2 class="font-bold text-gray-800 dark:text-white text-lg">Active Vault</h2>
-                            <button class="text-indigo-600 dark:text-indigo-400 text-sm font-bold hover:underline">View
-                                All</button>
+                            <h2 class="font-bold text-gray-800 dark:text-white text-lg">Recent Activity</h2>
+                            <button class="text-indigo-600 dark:text-indigo-400 text-sm font-bold hover:underline">Full History</button>
                         </div>
                         <div class="overflow-x-auto">
                             <table class="w-full text-left">
-                                <thead
-                                    class="bg-gray-50 dark:bg-gray-700/50 text-gray-400 text-[10px] uppercase font-bold tracking-widest">
+                                <thead class="bg-gray-50 dark:bg-gray-700/50 text-gray-400 text-[10px] uppercase font-bold tracking-widest">
                                     <tr>
-                                        <th class="px-8 py-4">Name</th>
-                                        <th class="px-8 py-4">Size</th>
-                                        <th class="px-8 py-4 text-right">Actions</th>
+                                        <th class="px-8 py-4">File Name</th>
+                                        <th class="px-8 py-4">Status</th>
+                                        <th class="px-8 py-4 text-right">Date</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-50 dark:divide-gray-700">
                                     <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition group">
                                         <td class="px-8 py-5 flex items-center space-x-4">
-                                            <div class="p-3 bg-red-50 dark:bg-red-900/20 rounded-xl text-red-500"><i
-                                                    class="fas fa-file-pdf"></i></div>
-                                            <span
-                                                class="font-bold text-gray-700 dark:text-gray-200 text-sm">Project_Specs_2026.pdf</span>
+                                            <div class="p-3 bg-red-50 dark:bg-red-900/20 rounded-xl text-red-500"><i class="fas fa-file-pdf"></i></div>
+                                            <span class="font-bold text-gray-700 dark:text-gray-200 text-sm">Marketing_Plan.pdf</span>
                                         </td>
-                                        <td class="px-8 py-5 text-sm text-gray-500 dark:text-gray-400">2.4 MB</td>
-                                        <td class="px-8 py-5 text-right space-x-3 text-gray-300 dark:text-gray-600">
-                                            <button class="hover:text-indigo-600 transition"><i
-                                                    class="fas fa-link"></i></button>
-                                            <button class="hover:text-red-500 transition"><i
-                                                    class="fas fa-trash-alt"></i></button>
+                                        <td class="px-8 py-5">
+                                            <span class="px-3 py-1 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 text-[10px] font-bold rounded-full">Encrypted</span>
                                         </td>
+                                        <td class="px-8 py-5 text-right text-xs text-gray-400 font-medium">2 mins ago</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition group">
+                                        <td class="px-8 py-5 flex items-center space-x-4">
+                                            <div class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl text-blue-500"><i class="fas fa-file-image"></i></div>
+                                            <span class="font-bold text-gray-700 dark:text-gray-200 text-sm">Design_Assets.zip</span>
+                                        </td>
+                                        <td class="px-8 py-5">
+                                            <span class="px-3 py-1 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 text-[10px] font-bold rounded-full">Shared</span>
+                                        </td>
+                                        <td class="px-8 py-5 text-right text-xs text-gray-400 font-medium">1 hour ago</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -277,33 +251,58 @@
                 </div>
 
                 <div class="space-y-8">
-                    <div class="gradient-bg p-8 rounded-[2rem] shadow-xl text-white relative overflow-hidden">
-                        <h3 class="font-bold text-lg mb-4 flex items-center"><i class="fas fa-shield-alt mr-2"></i> Link
-                            Security</h3>
-                        <p class="text-indigo-100 text-sm mb-6 leading-relaxed">Default expiry is set to 1 hour. Toggle
-                            high security to 5 minutes.</p>
-                        <div class="flex items-center space-x-3 bg-white/20 p-4 rounded-2xl">
-                            <i class="far fa-clock"></i>
-                            <span class="font-bold">1 Hour Expiry Active</span>
+                    <div class="bg-white dark:bg-gray-800 p-8 rounded-[2rem] border border-gray-100 dark:border-gray-700 shadow-sm">
+                        <h3 class="font-bold text-gray-800 dark:text-white mb-8">Storage Consumption</h3>
+                        <div class="storage-circle-container">
+                            <svg class="circle-svg" viewBox="0 0 160 160">
+                                <defs>
+                                    <linearGradient id="storageGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" stop-color="#667eea" />
+                                        <stop offset="100%" stop-color="#764ba2" />
+                                    </linearGradient>
+                                </defs>
+                                <circle class="circle-bg" cx="80" cy="80" r="70" />
+                                <circle class="circle-progress" cx="80" cy="80" r="70" />
+                            </svg>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                                <span class="text-3xl font-black text-gray-800 dark:text-white">65%</span>
+                                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Used</span>
+                            </div>
                         </div>
+                        <div class="mt-8 pt-6 border-t border-gray-50 dark:border-gray-700 flex items-center justify-between">
+                            <div>
+                                <p class="text-[10px] text-gray-400 font-extrabold uppercase">Total Capacity</p>
+                                <p class="text-sm font-black text-gray-800 dark:text-white">0.65 GB / 1.0 GB</p>
+                            </div>
+                            <button class="p-3 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-400 hover:text-indigo-600 transition">
+                                <i class="fas fa-expand-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="gradient-bg p-8 rounded-[2rem] shadow-xl text-white relative overflow-hidden">
+                        <div class="relative z-10">
+                            <h3 class="font-bold text-lg mb-4 flex items-center"><i class="fas fa-shield-alt mr-2"></i> Security Status</h3>
+                            <p class="text-indigo-100 text-sm mb-6 leading-relaxed">Default link expiry is active. Links will expire after 1 hour unless specified.</p>
+                            <div class="flex items-center space-x-3 bg-white/20 p-4 rounded-2xl">
+                                <i class="far fa-clock"></i>
+                                <span class="font-bold text-sm">1 Hour Expiry Policy</span>
+                            </div>
+                        </div>
+                        <i class="fas fa-fingerprint absolute -right-4 -bottom-4 text-white/10 text-9xl"></i>
                     </div>
                 </div>
             </div>
         </main>
     </div>
 
-    <div id="uploadModal"
-        class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-gray-900/60 backdrop-blur-sm px-4">
-        <div
-            class="glass w-full max-w-2xl rounded-[2.5rem] shadow-2xl overflow-hidden modal-enter dark:bg-gray-800 dark:border-gray-700">
+    <div id="uploadModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-gray-900/60 backdrop-blur-sm px-4">
+        <div class="glass w-full max-w-2xl rounded-[2.5rem] shadow-2xl overflow-hidden modal-enter dark:bg-gray-800">
             <div class="px-10 py-8 flex justify-between items-center border-b border-gray-50 dark:border-gray-700">
                 <div>
                     <h3 class="text-xl font-bold text-gray-800 dark:text-white">Confirm Upload</h3>
                     <p class="text-xs text-gray-400">Review the files you're about to encrypt.</p>
                 </div>
-                <button onclick="toggleModal()" class="text-gray-300 hover:text-red-500 transition">
-                    <i class="fas fa-times-circle text-2xl"></i>
-                </button>
+                <button onclick="toggleModal()" class="text-gray-300 hover:text-red-500 transition"><i class="fas fa-times-circle text-2xl"></i></button>
             </div>
             <div class="p-10">
                 <div id="fileListContainer" class="space-y-3 max-h-72 overflow-y-auto pr-2 mb-8 custom-scrollbar"></div>
@@ -313,18 +312,13 @@
                         <p class="text-sm font-bold text-gray-700 dark:text-gray-200" id="queueSummaryText">0 files</p>
                     </div>
                     <div class="text-right">
-                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest text-indigo-400">Total
-                            Size</p>
+                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest text-indigo-400">Total Size</p>
                         <p class="text-sm font-bold text-indigo-600 dark:text-indigo-400" id="totalSizeText">0 KB</p>
                     </div>
                 </div>
                 <div class="flex space-x-4">
-                    <button onclick="toggleModal()"
-                        class="flex-1 py-4 text-sm font-bold text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition">Cancel</button>
-                    <button
-                        class="flex-[2] gradient-bg text-white font-bold py-4 rounded-2xl shadow-xl shadow-indigo-100 hover:opacity-90 transition active:scale-95">
-                        Confirm & Secure Upload
-                    </button>
+                    <button onclick="toggleModal()" class="flex-1 py-4 text-sm font-bold text-gray-400 hover:text-gray-600 transition">Cancel</button>
+                    <button class="flex-[2] gradient-bg text-white font-bold py-4 rounded-2xl shadow-xl hover:opacity-90 transition active:scale-95">Confirm & Secure Upload</button>
                 </div>
             </div>
         </div>
@@ -333,26 +327,17 @@
     <input type="file" id="hiddenFileInput" multiple class="hidden">
 
     <script>
-        // --- DROPDOWN LOGIC ---
-        function toggleDropdown() {
-            const dropdown = document.getElementById('profileDropdown');
-            dropdown.classList.toggle('hidden');
-        }
-
-        // Close dropdown when clicking outside
-        window.addEventListener('click', function (e) {
+        // --- DROPDOWN & THEME LOGIC (Preserved) ---
+        function toggleDropdown() { document.getElementById('profileDropdown').classList.toggle('hidden'); }
+        window.addEventListener('click', (e) => {
             const dropdown = document.getElementById('profileDropdown');
             const btn = document.getElementById('profileBtn');
-
-            if (!btn.contains(e.target) && !dropdown.contains(e.target)) {
-                dropdown.classList.add('hidden');
-            }
+            if (!btn.contains(e.target) && !dropdown.contains(e.target)) dropdown.classList.add('hidden');
         });
-        // --- THEME LOGIC ---
+
         function toggleTheme() {
             const html = document.documentElement;
             const icon = document.getElementById('themeIcon');
-
             if (html.classList.contains('dark')) {
                 html.classList.remove('dark');
                 icon.classList.replace('fa-sun', 'fa-moon');
@@ -364,23 +349,19 @@
             }
         }
 
-        // Initialize theme on load
         (function initTheme() {
             const savedTheme = localStorage.getItem('theme');
-            const icon = document.getElementById('themeIcon');
             if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                 document.documentElement.classList.add('dark');
-                icon.classList.replace('fa-moon', 'fa-sun');
+                document.getElementById('themeIcon').classList.replace('fa-moon', 'fa-sun');
             }
         })();
 
-        // --- FILE UPLOAD LOGIC ---
+        // --- FILE UPLOAD LOGIC (Preserved) ---
         let stagedFiles = [];
         const dropZone = document.getElementById('dropZone');
         const modal = document.getElementById('uploadModal');
         const fileListContainer = document.getElementById('fileListContainer');
-        const queueSummaryText = document.getElementById('queueSummaryText');
-        const totalSizeText = document.getElementById('totalSizeText');
         const hiddenInput = document.getElementById('hiddenFileInput');
 
         function toggleModal() { modal.classList.toggle('hidden'); }
@@ -397,52 +378,39 @@
         function updateModalUI() {
             fileListContainer.innerHTML = '';
             let totalSize = 0;
-            if (stagedFiles.length === 0) {
-                fileListContainer.innerHTML = '<p class="text-center text-gray-400 py-10 italic">No files selected</p>';
-                toggleModal();
-                return;
-            }
+            if (stagedFiles.length === 0) { toggleModal(); return; }
             stagedFiles.forEach((file, index) => {
                 totalSize += file.size;
                 const fileRow = document.createElement('div');
-                fileRow.className = "flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 group transition hover:border-indigo-200";
+                fileRow.className = "flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700";
                 fileRow.innerHTML = `
                     <div class="flex items-center space-x-4">
-                        <div class="p-3 bg-indigo-50 dark:bg-indigo-900/30 rounded-xl text-indigo-500">
-                            <i class="fas fa-file"></i>
-                        </div>
+                        <div class="p-3 bg-indigo-50 dark:bg-indigo-900/30 rounded-xl text-indigo-500"><i class="fas fa-file"></i></div>
                         <div class="max-w-[250px]">
                             <p class="text-sm font-bold text-gray-800 dark:text-gray-200 truncate">${file.name}</p>
                             <p class="text-[10px] text-gray-400 font-extrabold uppercase">${formatBytes(file.size)}</p>
                         </div>
                     </div>
-                    <button onclick="removeFile(${index})" class="text-gray-300 hover:text-red-500 transition px-2">
-                        <i class="fas fa-trash-alt"></i>
-                    </button>
+                    <button onclick="removeFile(${index})" class="text-gray-300 hover:text-red-500 transition px-2"><i class="fas fa-trash-alt"></i></button>
                 `;
                 fileListContainer.appendChild(fileRow);
             });
-            queueSummaryText.innerText = `${stagedFiles.length} file(s)`;
-            totalSizeText.innerText = formatBytes(totalSize);
+            document.getElementById('queueSummaryText').innerText = `${stagedFiles.length} file(s)`;
+            document.getElementById('totalSizeText').innerText = formatBytes(totalSize);
         }
 
-        function removeFile(index) {
-            stagedFiles.splice(index, 1);
-            updateModalUI();
+        function removeFile(index) { stagedFiles.splice(index, 1); updateModalUI(); }
+        function handleFiles(files) { 
+            stagedFiles = [...stagedFiles, ...Array.from(files)]; 
+            updateModalUI(); 
+            if (modal.classList.contains('hidden')) toggleModal(); 
         }
 
-        function handleFiles(files) {
-            const fileArray = Array.from(files);
-            stagedFiles = [...stagedFiles, ...fileArray];
-            updateModalUI();
-            if (modal.classList.contains('hidden')) toggleModal();
-        }
-
-        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('border-indigo-500', 'bg-indigo-50'); });
-        dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('border-indigo-500', 'bg-indigo-50'); });
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('bg-indigo-50'); });
+        dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('bg-indigo-50'); });
         dropZone.addEventListener('drop', (e) => {
             e.preventDefault();
-            dropZone.classList.remove('border-indigo-500', 'bg-indigo-50');
+            dropZone.classList.remove('bg-indigo-50');
             handleFiles(e.dataTransfer.files);
         });
         dropZone.addEventListener('click', triggerFileSelect);

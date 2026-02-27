@@ -1,0 +1,58 @@
+src/
+├── components/
+│   ├── layout/                 # Shared across all authenticated pages
+│   │   ├── Navbar.jsx          # navbar.html logic
+│   │   ├── Sidebar.jsx         # sidebar.html logic
+│   │   └── MainLayout.jsx      # Wrapper for Navbar + Sidebar + Content
+│   ├── ui/                     # Reusable Atomic components
+│   │   ├── Button.jsx          # Gradient & Outline variants
+│   │   ├── Card.jsx            # The base "glass" or "auth-card" style
+│   │   ├── Input.jsx           # Styled text/password inputs
+│   │   └── Badge.jsx           # Status indicators (Active, Expiring)
+│   └── feedback/
+│       ├── Toast.jsx           # The notification system we built
+│       ├── Modal.jsx           # Share/Upload modals
+│       └── EmptyState.jsx      # The "No Files" illustration component
+│
+├── features/                   # Business Logic & Feature-specific UI
+│   ├── auth/
+│   │   ├── LoginForm.jsx
+│   │   ├── RegisterForm.jsx
+│   │   └── PasswordResetFlow.jsx # Forgot-password, password-link, reset
+│   ├── files/
+│   │   ├── FileGrid.jsx        # myfiles.html grid logic
+│   │   ├── FileTable.jsx       # list-view logic
+│   │   ├── FileCard.jsx        # Individual file card with stopPropagation
+│   │   ├── FolderBreadcrumbs.jsx # For folder-content.html navigation
+│   │   └── FilePreview.jsx     # file-detail.html previewer
+│   ├── sharing/
+│   │   ├── SharedLinksTable.jsx # shared.html logic
+│   │   └── RevokeButton.jsx
+│   └── profile/
+│       ├── ProfileHeader.jsx
+│       └── EditProfileForm.jsx  # profile-edit.html logic
+│
+├── hooks/                      # Custom Logic
+│   ├── useTheme.js             # Dark/Light mode logic
+│   ├── useAuth.js              # User session state
+│   └── useFiles.js             # Fetching/Deleting/Filtering files
+│
+├── pages/                      # Page components (Routes)
+│   ├── Landing.jsx             # landingpage.html
+│   ├── Dashboard.jsx           # dashboard.html
+│   ├── Explorer.jsx            # explore.html
+│   ├── MyFiles.jsx             # myfiles.html
+│   ├── FolderDetail.jsx        # folder-content.html
+│   ├── FileDetail.jsx          # file-detail.html
+│   ├── SharedLinks.jsx         # shared.html
+│   ├── Trash.jsx               # recently-deleted.html
+│   ├── Profile.jsx             # profile.html
+│   ├── Login.jsx               # login.html
+│   └── NotFound.jsx            # 404-notfound.html
+│
+├── context/
+│   ├── ThemeContext.jsx        # Global Theme state
+│   └── AuthContext.jsx         # Global Auth state
+│
+├── App.jsx                     # Routing configuration (React Router)
+└── main.jsx                    # Entry point
