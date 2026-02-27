@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" id="mainHtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexusShare | Secure ephemeral file sharing</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); }
+        .dark .glass { background: rgba(17, 24, 39, 0.8); }
+        .gradient-text { background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .hero-shape { position: absolute; filter: blur(80px); opacity: 0.4; z-index: -1; }
+    </style>
+</head>
+<body class="bg-white dark:bg-gray-900 transition-colors duration-300 overflow-x-hidden">
+
+    <div class="hero-shape w-96 h-96 bg-indigo-500 top-[-10%] left-[-10%] rounded-full"></div>
+    <div class="hero-shape w-96 h-96 bg-purple-500 bottom-[10%] right-[-10%] rounded-full"></div>
+
+    <nav class="fixed w-full z-50 px-6 py-4">
+        <div class="max-w-7xl mx-auto glass rounded-[2rem] px-6 py-3 border border-white/20 dark:border-gray-800 shadow-xl flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <div class="gradient-bg p-1.5 rounded-lg">
+                    <i class="fas fa-cloud-upload-alt text-white text-lg"></i>
+                </div>
+                <span class="text-xl font-extrabold tracking-tight text-gray-800 dark:text-white">NexusShare</span>
+            </div>
+            
+            <div class="hidden md:flex items-center space-x-8 text-sm font-bold text-gray-600 dark:text-gray-300">
+                <a href="#features" class="hover:text-indigo-600 transition">Features</a>
+   
+                <a href="login.html" class="hover:text-indigo-600 transition">Sign In</a>
+                <button onclick="toggleTheme()" class="text-gray-400 hover:text-indigo-600 transition"><i id="themeIcon" class="fas fa-moon text-lg"></i></button>
+                <a href="register.html" class="gradient-bg text-white px-6 py-2.5 rounded-xl shadow-lg hover:opacity-90 transition">Get Started</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="pt-44 pb-20 px-6">
+        <div class="max-w-5xl mx-auto text-center">
+            <span class="px-4 py-2 rounded-full bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 text-xs font-extrabold uppercase tracking-widest mb-6 inline-block">
+                Secure. Ephemeral. Encrypted.
+            </span>
+            <h1 class="text-5xl md:text-7xl font-extrabold text-gray-900 dark:text-white leading-[1.1] mb-8">
+                Share files with <span class="gradient-text">Absolute Privacy</span>
+            </h1>
+            <p class="text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto mb-12 leading-relaxed">
+                The most secure way to share sensitive documents. Upload your files, set an expiry timer, and share a link that disappears forever.
+            </p>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="register.html" class="w-full sm:w-auto px-10 py-5 gradient-bg text-white font-bold rounded-2xl shadow-2xl hover:scale-105 transition transform">
+                    Start Sharing
+                </a>
+                <a href="login.html" class="w-full sm:w-auto px-10 py-5 bg-white dark:bg-gray-800 text-gray-800 dark:text-white font-bold rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 hover:bg-gray-50 transition">
+                    Login
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="py-20 px-6">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <div class="md:col-span-2 bg-gray-50 dark:bg-gray-800/50 p-10 rounded-[3rem] border border-gray-100 dark:border-gray-800 flex flex-col justify-between">
+                <div>
+                    <div class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/40 rounded-2xl flex items-center justify-center text-indigo-600 mb-6">
+                        <i class="fas fa-bolt text-xl"></i>
+                    </div>
+                    <h3 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Ultra-Fast Expiry Links</h3>
+                    <p class="text-gray-500 dark:text-gray-400">Set links to expire in as little as 5 minutes. Perfect for one-time credential sharing or sensitive API keys.</p>
+                </div>
+                <div class="mt-10 bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-inner border border-gray-100 dark:border-gray-800">
+                    <div class="flex justify-between items-center text-sm font-bold">
+                        <span class="text-gray-400">Expiring in:</span>
+                        <span class="text-red-500">04:59s</span>
+                    </div>
+                    <div class="w-full h-2 bg-gray-100 dark:bg-gray-800 rounded-full mt-3">
+                        <div class="h-full bg-red-500 w-3/4 rounded-full"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-indigo-600 p-10 rounded-[3rem] text-white flex flex-col justify-between">
+                <h3 class="text-3xl font-bold mb-4">Zero-Knowledge Encryption</h3>
+                <p class="opacity-80 mb-8 text-sm">We can't see your files. No one can. Your data is encrypted locally before it ever reaches our servers.</p>
+                <div class="flex justify-center">
+                    <i class="fas fa-shield-alt text-9xl opacity-20"></i>
+                </div>
+            </div>
+<div class="bg-gray-900 p-10 rounded-[3rem] flex flex-col justify-between group overflow-hidden">
+                <div class="relative z-10">
+                    <h3 class="text-2xl font-bold text-white mb-2">Link Analytics</h3>
+                    <p class="text-gray-400 text-sm">Deep insights into how your files are being consumed.</p>
+                </div>
+                <div class="mt-8 flex items-end space-x-2 h-24 relative z-10">
+                    <div class="w-full bg-indigo-500/20 h-12 rounded-t-lg group-hover:h-16 transition-all duration-500"></div>
+                    <div class="w-full bg-indigo-500/40 h-20 rounded-t-lg group-hover:h-24 transition-all duration-500"></div>
+                    <div class="w-full bg-indigo-500/60 h-16 rounded-t-lg group-hover:h-20 transition-all duration-500"></div>
+                    <div class="w-full bg-indigo-500/80 h-24 rounded-t-lg group-hover:h-12 transition-all duration-500"></div>
+                    <div class="w-full bg-indigo-500 h-10 rounded-t-lg group-hover:h-16 transition-all duration-500"></div>
+                </div>
+                <div class="absolute bottom-[-20px] left-[-20px] text-white/5 transform group-hover:rotate-12 transition duration-700">
+                    <i class="fas fa-chart-area text-[10rem]"></i>
+                </div>
+            </div>
+
+            <div class="md:col-span-2 bg-gray-50 dark:bg-gray-800/50 p-10 rounded-[3rem] border border-gray-100 dark:border-gray-800 flex flex-col md:flex-row items-center gap-10">
+                <div class="flex-1">
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Cross-Platform Sync</h3>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm">Access your secure vault from any device. Your encryption keys stay with you, ensuring seamless but locked-down mobility.</p>
+                </div>
+                <div class="flex-1 flex justify-center items-center space-x-8">
+                    <div class="flex flex-col items-center opacity-40 hover:opacity-100 transition duration-300">
+                        <i class="fas fa-mobile-alt text-4xl text-gray-400 dark:text-white mb-2"></i>
+                        <span class="text-[10px] font-bold uppercase tracking-widest dark:text-gray-400">Mobile</span>
+                    </div>
+                    <div class="flex flex-col items-center scale-125">
+                        <i class="fas fa-desktop text-4xl text-indigo-600 mb-2"></i>
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-indigo-600">Desktop</span>
+                    </div>
+                    <div class="flex flex-col items-center opacity-40 hover:opacity-100 transition duration-300">
+                        <i class="fas fa-tablet-alt text-4xl text-gray-400 dark:text-white mb-2"></i>
+                        <span class="text-[10px] font-bold uppercase tracking-widest dark:text-gray-400">Tablet</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-12 px-6 border-t border-gray-100 dark:border-gray-800">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+            <div class="flex items-center space-x-2">
+                <div class="gradient-bg p-1.5 rounded-lg">
+                    <i class="fas fa-cloud-upload-alt text-white"></i>
+                </div>
+                <span class="text-lg font-bold text-gray-800 dark:text-white">NexusShare</span>
+            </div>
+            <p class="text-sm text-gray-400">© 2026 NexusShare. Built with SOLID principles.</p>
+            <div class="flex space-x-6 text-gray-400">
+                <a href="#" class="hover:text-indigo-600 transition"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="hover:text-indigo-600 transition"><i class="fab fa-github"></i></a>
+                <a href="#" class="hover:text-indigo-600 transition"><i class="fab fa-linkedin"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+            html.classList.toggle('dark');
+            const isDark = html.classList.contains('dark');
+            icon.classList.replace(isDark ? 'fa-moon' : 'fa-sun', isDark ? 'fa-sun' : 'fa-moon');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        }
+
+        (function init() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.classList.add('dark');
+                document.getElementById('themeIcon').classList.replace('fa-moon', 'fa-sun');
+            }
+        })();
+    </script>
+</body>
+</html>

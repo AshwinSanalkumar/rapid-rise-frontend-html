@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexusShare | Create Account</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap');
+        
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        .sidebar-dark { background: #0f172a; }
+
+        .security-grid {
+            background-image: 
+                linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        .btn-auth {
+            background: #4f46e5;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-auth:hover {
+            background: #4338ca;
+            transform: translateY(-1px);
+            box-shadow: 0 12px 24px -8px rgba(79, 70, 229, 0.4);
+        }
+
+        .input-clean {
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s;
+        }
+        .dark .input-clean { border: 1px solid #334155; background: #1e293b; color: white; }
+        .input-clean:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 1px #4f46e5;
+            outline: none;
+        }
+
+        .eye-icon {
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .eye-icon:hover { color: #4f46e5; }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <div class="w-full max-w-5xl grid lg:grid-cols-2 bg-white dark:bg-slate-900 shadow-2xl rounded-[2.5rem] overflow-hidden border border-slate-100 dark:border-slate-800">
+        
+        <div class="hidden lg:flex sidebar-dark p-16 flex-col justify-between relative overflow-hidden security-grid">
+            <div class="relative z-10">
+                <div class="flex items-center space-x-3 mb-16">
+                    <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <span class="text-xl font-bold text-white tracking-tight">NexusShare</span>
+                </div>
+                
+                <h1 class="text-5xl font-extrabold text-white leading-tight mb-6">
+                    Share and <br> 
+                    Store files <br> 
+                    <span class="text-indigo-400 font-mono tracking-tighter italic text-4xl">Securely.</span>
+                </h1>
+            </div>
+
+            <div class="relative z-10 bg-slate-800/40 border border-slate-700/50 p-8 rounded-[2rem] backdrop-blur-xl">
+                <div class="space-y-6">
+         
+
+                    <div class="flex items-center -space-x-3">
+                        <img src="https://i.pravatar.cc/150?u=a1" class="w-10 h-10 rounded-full border-2 border-slate-800 object-cover">
+                        <img src="https://i.pravatar.cc/150?u=a2" class="w-10 h-10 rounded-full border-2 border-slate-800 object-cover">
+                        <img src="https://i.pravatar.cc/150?u=a3" class="w-10 h-10 rounded-full border-2 border-slate-800 object-cover">
+                        <div class="w-10 h-10 rounded-full border-2 border-slate-800 bg-indigo-600 flex items-center justify-center text-[10px] font-bold text-white">+12</div>
+                    </div>
+
+                    <p class="text-[11px] text-slate-400 font-medium leading-relaxed">
+                        Join NexusShare to manage high-availability file storage and sharing.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-8 lg:p-14 flex flex-col justify-center bg-white dark:bg-slate-900">
+            <div class="mb-8">
+                <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Register</h2>
+                <p class="text-slate-500 dark:text-slate-400 mt-2 font-medium">Create your secure engineering profile.</p>
+            </div>
+
+            <form onsubmit="handleRegister(event)" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-1.5">
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">First Name</label>
+                        <input type="text" id="firstName" required placeholder="First name" class="input-clean w-full px-4 py-3 rounded-xl text-sm">
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Last Name</label>
+                        <input type="text" id="lastName" required placeholder="Las name" class="input-clean w-full px-4 py-3 rounded-xl text-sm">
+                    </div>
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Email / Username</label>
+                    <input type="email" id="email" required placeholder="example@gmail.com" class="input-clean w-full px-4 py-3 rounded-xl text-sm">
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Phone Number</label>
+                    <input type="tel" id="phone" required placeholder="+91 7034 XXX XXX" class="input-clean w-full px-4 py-3 rounded-xl text-sm">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-1.5">
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Password</label>
+                        <div class="relative">
+                            <input type="password" id="password" required placeholder="••••••••" class="input-clean w-full px-4 pr-10 py-3 rounded-xl text-sm">
+                            <button type="button" onclick="toggleVisibility('password', 'eye1')" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+                                <i id="eye1" class="fas fa-eye eye-icon"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Confirm</label>
+                        <div class="relative">
+                            <input type="password" id="confirmPassword" required placeholder="••••••••" class="input-clean w-full px-4 pr-10 py-3 rounded-xl text-sm">
+                            <button type="button" onclick="toggleVisibility('confirmPassword', 'eye2')" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+                                <i id="eye2" class="fas fa-eye eye-icon"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="errorMessage" class="text-[10px] text-red-500 font-bold uppercase hidden ml-1">Passwords do not match</div>
+
+                <button type="submit" id="regBtn" class="btn-auth w-full text-white font-bold py-4 rounded-xl flex items-center justify-center group shadow-lg shadow-indigo-500/20 mt-4">
+                    <span>Create Account</span>
+                    <i class="fas fa-arrow-right ml-3 text-[10px] opacity-70 group-hover:translate-x-1 transition-transform"></i>
+                </button>
+            </form>
+
+            <p class="mt-8 text-center text-xs text-slate-400 font-bold uppercase tracking-widest">
+                Existing Member? <a href="login.html" class="text-indigo-600 hover:underline">Sign In</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Function to toggle password visibility
+        function toggleVisibility(inputId, eyeId) {
+            const input = document.getElementById(inputId);
+            const eye = document.getElementById(eyeId);
+            
+            if (input.type === "password") {
+                input.type = "text";
+                eye.classList.remove('fa-eye');
+                eye.classList.add('fa-eye-slash');
+            } else {
+                input.type = "password";
+                eye.classList.remove('fa-eye-slash');
+                eye.classList.add('fa-eye');
+            }
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            const pass = document.getElementById('password').value;
+            const confirm = document.getElementById('confirmPassword').value;
+            const error = document.getElementById('errorMessage');
+            const btn = document.getElementById('regBtn');
+
+            if (pass !== confirm) {
+                error.classList.remove('hidden');
+                return;
+            }
+
+            error.classList.add('hidden');
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin text-lg"></i>';
+            btn.disabled = true;
+
+            setTimeout(() => {
+                alert('Account Initialized!');
+                window.location.href = 'login.html';
+            }, 1200);
+        }
+
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+</body>
+</html> 

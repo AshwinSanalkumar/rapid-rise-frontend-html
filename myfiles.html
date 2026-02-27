@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en" id="mainHtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexusShare | My Digital Vault</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        
+        body { font-family: 'Plus Jakarta Sans', sans-serif; transition: background-color 0.3s ease; }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .dark .glass {
+            background: rgba(17, 24, 39, 0.95);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .sidebar-link:hover {
+            background: rgba(99, 102, 241, 0.05);
+            color: #4f46e5;
+        }
+        .active-link {
+            background: #eef2ff;
+            color: #4f46e5;
+            border-right: 4px solid #4f46e5;
+        }
+        .dark .active-link {
+            background: rgba(79, 70, 229, 0.1);
+            color: #818cf8;
+            border-right: 4px solid #818cf8;
+        }
+
+        .file-card { transition: all 0.3s ease; }
+        .file-card:hover { transform: translateY(-5px); }
+
+        /* List View Overrides */
+        .list-view { display: flex !important; flex-direction: column !important; gap: 1rem !important; }
+        .list-view .file-card { 
+            display: flex !important; 
+            flex-direction: row !important; 
+            align-items: center !important; 
+            padding: 1rem 1.5rem !important;
+            border-radius: 1.25rem !important;
+        }
+        .list-view .file-card > div:first-child { width: 60px !important; height: 45px !important; margin-bottom: 0 !important; margin-right: 1.5rem !important; flex-shrink: 0; }
+        .list-view .file-card h3 { margin-right: auto !important; }
+        .list-view .file-card p { margin-top: 0 !important; margin-right: 2rem !important; min-width: 120px; }
+        .list-view .file-card .mt-6 { margin-top: 0 !important; padding-top: 0 !important; border-top: 0 !important; gap: 1.5rem; }
+
+        @keyframes modalFade {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .modal-animate { animation: modalFade 0.2s ease-out forwards; }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 min-h-screen flex flex-col transition-colors duration-300">
+
+  
+    <nav class="glass sticky top-0 z-40 px-6 py-4 flex justify-between items-center shadow-sm">
+        <div class="flex items-center space-x-2 cursor-pointer">
+            <div class="gradient-bg p-2 rounded-lg">
+                <i class="fas fa-cloud-upload-alt text-white text-xl"></i>
+            </div>
+            <span class="text-2xl font-bold tracking-tight text-gray-800 dark:text-white">NexusShare</span>
+        </div>
+        
+        <div class="flex items-center space-x-6">
+            <button onclick="toggleTheme()"
+                class="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:text-indigo-600 transition-all flex items-center justify-center">
+                <i id="themeIcon" class="fas fa-moon"></i>
+            </button>
+
+            <div class="hidden md:flex relative">
+                <input type="text" placeholder="Search files..."
+                    class="pl-10 pr-4 py-2 bg-gray-100 dark:bg-gray-800 border-transparent rounded-full text-sm focus:bg-white dark:focus:bg-gray-700 focus:ring-2 focus:ring-indigo-500 w-64 transition-all outline-none dark:text-gray-200">
+                <i class="fas fa-search absolute left-4 top-2.5 text-gray-400"></i>
+            </div>
+
+            <div class="relative">
+                <button onclick="toggleDropdown()" id="profileBtn"
+                    class="flex items-center space-x-3 focus:outline-none group">
+                    <div
+                        class="h-10 w-10 rounded-full gradient-bg flex items-center justify-center text-white font-bold shadow-md border-2 border-white dark:border-gray-800 transition-transform group-hover:scale-105">
+                        A
+                    </div>
+                    <div class="hidden md:block text-left">
+                        <p class="text-xs font-bold text-gray-800 dark:text-white leading-none">Ashwin</p>
+                        <p class="text-[10px] text-gray-400 font-medium">Standard User</p>
+                    </div>
+                    <i
+                        class="fas fa-chevron-down text-[10px] text-gray-400 group-hover:text-indigo-500 transition-colors"></i>
+                </button>
+
+                <div id="profileDropdown"
+                    class="hidden absolute right-0 mt-3 w-56 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-700 overflow-hidden py-2 z-50 modal-enter">
+                    <div class="px-4 py-3 border-b border-gray-50 dark:border-gray-700">
+                        <p class="text-xs text-gray-400 font-bold uppercase tracking-widest">Account</p>
+                        <p class="text-sm font-bold text-gray-700 dark:text-gray-200 truncate">ashwin@example.com</p>
+                    </div>
+
+                    <a href="profile.html"
+                        class="flex items-center px-4 py-3 text-sm text-gray-600 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 transition">
+                        <i class="fas fa-user-circle mr-3 opacity-50"></i> My Profile
+                    </a>
+
+
+                    <div class="border-t border-gray-50 dark:border-gray-700 mt-2">
+                        <a href="login.html"
+                            class="flex items-center px-4 py-3 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 transition font-bold">
+                            <i class="fas fa-sign-out-alt mr-3"></i> Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex flex-1">
+        <aside class="w-64 bg-white dark:bg-gray-900 border-r border-gray-100 dark:border-gray-800 hidden lg:block py-8 sticky top-[73px] h-[calc(100vh-73px)]">
+    <div class="px-6 mb-8">
+        <button onclick="triggerFileSelect()" class="w-full gradient-bg text-white font-bold py-3 rounded-2xl shadow-lg hover:shadow-indigo-200 transition flex items-center justify-center group">
+            <i class="fas fa-plus mr-2 group-hover:rotate-90 transition-transform"></i> New Upload
+        </button>
+    </div>
+    
+    <nav class="space-y-1">
+         <a href="index.html" class="sidebar-link flex items-center px-6 py-3 text-gray-500 dark:text-gray-400 font-medium transition">
+                    <i class="fas fa-th-large mr-3 text-lg"></i> Dashboard
+                </a>
+                <a href="myfiles.html" class="sidebar-link active-link flex items-center px-6 py-3 font-bold transition">
+                    <i class="fas fa-folder-open mr-3 text-lg"></i> My Files
+                </a>
+                <a href="shared.html" class="sidebar-link flex items-center px-6 py-3 text-gray-500 dark:text-gray-400 font-medium transition">
+                    <i class="fas fa-share-alt mr-3 text-lg"></i> Shared Links
+                </a>
+                
+
+        <div class="pt-8">
+            <p class="px-8 text-[10px] uppercase tracking-widest text-gray-400 font-extrabold mb-3">Storage Folders</p>
+            <a href="explore.html" class="sidebar-link flex items-center px-6 py-3 text-gray-500 dark:text-gray-400 font-medium transition">
+                <i class="fas fa-folder-open mr-3 text-lg"></i> File Explorer
+            </a>
+            <a href="myfiles.html" class="sidebar-link flex items-center px-6 py-3 text-gray-500 dark:text-gray-400 font-medium transition">
+                <i class="fas fa-history mr-3 text-lg"></i> Recent Files
+            </a>
+        </div>
+        
+        <div class="pt-12 px-6">
+            <div class="bg-gray-50 dark:bg-gray-800 rounded-2xl p-4 border border-gray-100 dark:border-gray-700">
+                <p class="text-[10px] uppercase tracking-widest text-gray-400 font-extrabold mb-3">Cloud Storage</p>
+                <div class="h-1.5 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                    <div class="h-full gradient-bg w-[65%]"></div>
+                </div>
+                <p class="text-xs text-gray-600 dark:text-gray-400 mt-3 font-medium">0.65 GB of 1 GB</p>
+            </div>
+        </div>
+    </nav>
+</aside>
+
+        <main class="flex-1 p-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+                <div>
+                    <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white">My Files</h1>
+                    <p class="text-gray-500 dark:text-gray-400 mt-1">Select a file to generate a secure sharing link.</p>
+                </div>
+                <div class="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-xl border border-gray-200 dark:border-gray-700">
+                    <button onclick="setView('grid')" id="gridBtn" class="w-10 h-10 flex items-center justify-center rounded-lg bg-white dark:bg-gray-700 shadow-sm text-indigo-600 transition-all">
+                        <i class="fas fa-th-large"></i>
+                    </button>
+                    <button onclick="setView('list')" id="listBtn" class="w-10 h-10 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-all">
+                        <i class="fas fa-list"></i>
+                    </button>
+                </div>
+            </div>
+
+<div id="fileContainer" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+<div class="file-card bg-white dark:bg-gray-800 p-4 rounded-[2.5rem] shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-xl group">
+    
+    <div class="relative h-32 w-full bg-black rounded-[1.5rem] mb-4 overflow-hidden border border-gray-100 dark:border-gray-800 flex flex-col p-3 space-y-2">
+        
+        <div class="grid gap-2 opacity-60 group-hover:opacity-100 duration-500">
+            <iframe 
+                src="media/Smec-Python-fullstack-Certificate .pdf" 
+                title="Preview of Smec-Python-fullstack-Certificate .pdf"
+                class="absolute inset-0 w-full h-full border-none pointer-events-none overflow-hidden block"
+                loading="lazy">
+            </iframe>
+
+            <div class="h-2 w-3/4 bg-white/10 rounded-full"></div>
+            <div class="h-2 w-full bg-white/10 rounded-full"></div>
+            <div class="h-2 w-5/6 bg-white/10 rounded-full"></div>
+
+            <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80"></div>
+        </div>
+
+        <div class="absolute inset-0 flex items-center justify-center">
+            <i class="fas fa-file-pdf text-red-500 text-3xl rotate-12 opacity-100 group-hover:rotate-0 group-hover:opacity-0 group-hover:scale-110 transition-all duration-300"></i>
+        </div>
+    </div>
+
+    <h3 class="font-bold text-gray-800 dark:text-gray-100 truncate px-1">System_Architecture.pdf</h3>
+    <p class="text-xs text-gray-400 mt-1 px-1">Feb 20 • 4.2 MB</p>
+    
+    <div class="mt-6 pt-4 border-t border-gray-50 dark:border-gray-700 flex items-center justify-between px-1">
+        <span class="text-[10px] font-bold text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 px-2 py-1 rounded-md">1 HOUR EXP</span>
+        <button onclick="event.stopPropagation();openShareModal('System_Architecture.pdf')" class="text-xs font-bold text-gray-700 dark:text-gray-300 hover:text-indigo-600 transition">
+            <i class="fas fa-link mr-1"></i> Get Link
+        </button>
+    </div>
+</div>
+    <div onclick="location.href='file-detail.html'" class="file-card bg-white dark:bg-gray-800 p-4 rounded-[2.5rem] shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-xl group">
+        <div  class="relative h-32 w-full rounded-[1.5rem] mb-4 overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="Preview">
+            <div class="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors"></div>
+            <div class="absolute top-2 right-2 bg-white/20 backdrop-blur-md p-1.5 rounded-lg text-white text-[10px]">
+                <i class="fas fa-image"></i>
+            </div>
+        </div>
+        <h3 class="font-bold text-gray-800 dark:text-gray-100 truncate px-1">Project_Final_Logo.png</h3>
+        <p class="text-xs text-gray-400 mt-1 px-1">Today • 1.8 MB</p>
+        <div class="mt-6 pt-4 border-t border-gray-50 dark:border-gray-700 flex items-center justify-between px-1">
+            <span class="text-[10px] font-bold text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-1 rounded-md">PRIVATE</span>
+            <button onclick="event.stopPropagation(); openShareModal('Project_Final_Logo.png')" class="text-xs font-bold text-gray-700 dark:text-gray-300 hover:text-indigo-600 transition">
+                <i class="fas fa-share-alt mr-1"></i> Share
+            </button>
+        </div>
+    </div>
+
+    <div class="file-card bg-white dark:bg-gray-800 p-4 rounded-[2.5rem] shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-xl group">
+        <div class="relative h-32 w-full bg-emerald-50/30 dark:bg-emerald-900/10 rounded-[1.5rem] mb-4 overflow-hidden border border-emerald-100/50 dark:border-emerald-900/20 p-3">
+            <div class="grid grid-cols-3 gap-2 opacity-20">
+                <div class="h-4 bg-emerald-200 dark:bg-emerald-700 rounded-sm"></div>
+                <div class="h-4 bg-emerald-200 dark:bg-emerald-700 rounded-sm"></div>
+                <div class="h-4 bg-emerald-200 dark:bg-emerald-700 rounded-sm"></div>
+                <div class="h-4 bg-emerald-100 dark:bg-emerald-800 rounded-sm"></div>
+                <div class="h-4 bg-emerald-100 dark:bg-emerald-800 rounded-sm"></div>
+                <div class="h-4 bg-emerald-100 dark:bg-emerald-800 rounded-sm"></div>
+            </div>
+            <div class="absolute inset-0 flex items-center justify-center">
+                <i class="fas fa-file-excel text-emerald-500 text-3xl group-hover:rotate-12 transition-transform duration-300"></i>
+            </div>
+        </div>
+        <h3 class="font-bold text-gray-800 dark:text-gray-100 truncate px-1">Q1_Budget_Plan.xlsx</h3>
+        <p class="text-xs text-gray-400 mt-1 px-1">3 days ago • 850 KB</p>
+        <div class="mt-6 pt-4 border-t border-gray-50 dark:border-gray-700 flex items-center justify-between px-1">
+            <span class="text-[10px] font-bold text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 px-2 py-1 rounded-md">1 HOUR EXP</span>
+            <button onclick="event.stopPropagation();openShareModal('Q1_Budget_Plan.xlsx')" class="text-xs font-bold text-gray-700 dark:text-gray-300 hover:text-indigo-600 transition">
+                <i class="fas fa-link mr-1"></i> Get Link
+            </button>
+        </div>
+    </div>
+</div>
+
+            <div class="mt-12 flex flex-col sm:flex-row items-center justify-between bg-white dark:bg-gray-800 px-8 py-5 rounded-[2rem] border border-gray-100 dark:border-gray-700 shadow-sm">
+                <div class="text-sm text-gray-400 font-medium mb-4 sm:mb-0">
+                    Showing <span class="text-gray-900 dark:text-white font-bold">1-3</span> of <span class="text-gray-900 dark:text-white font-bold">24</span> files
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button class="w-10 h-10 flex items-center justify-center rounded-xl border border-gray-100 dark:border-gray-700 text-gray-400 hover:bg-indigo-50 dark:hover:bg-gray-700 transition shadow-sm bg-white dark:bg-gray-800 cursor-not-allowed" disabled>
+                        <i class="fas fa-chevron-left text-xs"></i>
+                    </button>
+                    <button class="w-10 h-10 flex items-center justify-center rounded-xl bg-indigo-600 text-white font-bold shadow-md shadow-indigo-100">1</button>
+                    <button class="w-10 h-10 flex items-center justify-center rounded-xl border border-gray-100 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-bold hover:bg-gray-50 dark:hover:bg-gray-700 transition">2</button>
+                    <button class="w-10 h-10 flex items-center justify-center rounded-xl border border-gray-100 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-bold hover:bg-gray-50 dark:hover:bg-gray-700 transition">3</button>
+                    <div class="text-gray-300 dark:text-gray-600 px-1">...</div>
+                    <button class="w-10 h-10 flex items-center justify-center rounded-xl border border-gray-100 dark:border-gray-700 text-gray-400 hover:bg-indigo-50 transition shadow-sm bg-white dark:bg-gray-800">
+                        <i class="fas fa-chevron-right text-xs"></i>
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="shareModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-gray-900/60 backdrop-blur-sm px-4">
+        <div class="glass dark:bg-gray-800 w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden modal-animate border border-white/20">
+            <div class="px-8 py-6 flex justify-between items-center border-b border-gray-100 dark:border-gray-700">
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 dark:text-white">Share via Link</h3>
+                    <p class="text-xs text-gray-400">Recipient will receive the link via email.</p>
+                </div>
+                <button onclick="closeShareModal()" class="text-gray-400 hover:text-red-500 transition">
+                    <i class="fas fa-times-circle text-2xl"></i>
+                </button>
+            </div>
+
+            <div class="p-8">
+                <div class="flex items-center space-x-4 mb-8 p-4 bg-indigo-50/50 dark:bg-indigo-900/20 rounded-2xl border border-indigo-100 dark:border-indigo-900/50">
+                    <div class="p-2 bg-white dark:bg-gray-700 rounded-lg shadow-sm text-indigo-600 dark:text-indigo-400"><i class="fas fa-file"></i></div>
+                    <div class="truncate">
+                        <p class="text-sm font-bold text-gray-800 dark:text-gray-100 truncate" id="modalFileName">file_name.pdf</p>
+                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Selected Resource</p>
+                    </div>
+                </div>
+
+                <div class="space-y-5">
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2 ml-1">Recipient Email</label>
+                        <input type="email" id="emailInput" placeholder="developer@company.com" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-gray-800 transition-all dark:text-white">
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2 ml-1">Link Expiry</label>
+                        <select id="expiryInput" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl text-sm font-bold text-gray-700 dark:text-gray-200 outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="1h">1 Hour (Standard)</option>
+                            <option value="5m">5 Minutes (Highly Secure)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button onclick="handleGenerate()" id="generateBtn" class="w-full mt-8 gradient-bg text-white font-bold py-4 rounded-2xl shadow-lg shadow-indigo-100 hover:opacity-90 transition transform active:scale-[0.98] flex items-center justify-center">
+                    <span>Send Secure Link</span>
+                    <i class="fas fa-paper-plane ml-2"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- VIEW TOGGLE LOGIC ---
+           // --- DROPDOWN LOGIC ---
+        function toggleDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        // Close dropdown when clicking outside
+        window.addEventListener('click', function (e) {
+            const dropdown = document.getElementById('profileDropdown');
+            const btn = document.getElementById('profileBtn');
+
+            if (!btn.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+        function setView(viewType) {
+            const container = document.getElementById('fileContainer');
+            const gridBtn = document.getElementById('gridBtn');
+            const listBtn = document.getElementById('listBtn');
+
+            if (viewType === 'list') {
+                container.classList.add('list-view');
+                listBtn.classList.add('bg-white', 'dark:bg-gray-700', 'shadow-sm', 'text-indigo-600');
+                listBtn.classList.remove('text-gray-400');
+                gridBtn.classList.remove('bg-white', 'dark:bg-gray-700', 'shadow-sm', 'text-indigo-600');
+                gridBtn.classList.add('text-gray-400');
+            } else {
+                container.classList.remove('list-view');
+                gridBtn.classList.add('bg-white', 'dark:bg-gray-700', 'shadow-sm', 'text-indigo-600');
+                gridBtn.classList.remove('text-gray-400');
+                listBtn.classList.remove('bg-white', 'dark:bg-gray-700', 'shadow-sm', 'text-indigo-600');
+                listBtn.classList.add('text-gray-400');
+            }
+        }
+
+        // --- THEME LOGIC ---
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                icon.classList.replace('fa-sun', 'fa-moon');
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.add('dark');
+                icon.classList.replace('fa-moon', 'fa-sun');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        (function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const icon = document.getElementById('themeIcon');
+            if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                icon.classList.replace('fa-moon', 'fa-sun');
+            }
+        })();
+
+        // --- MODAL LOGIC ---
+        const modal = document.getElementById('shareModal');
+        const modalFileName = document.getElementById('modalFileName');
+        const generateBtn = document.getElementById('generateBtn');
+
+        function openShareModal(name) {
+            modalFileName.innerText = name;
+            modal.classList.remove('hidden');
+        }
+
+        function closeShareModal() {
+            modal.classList.add('hidden');
+        }
+
+        function handleGenerate() {
+            const email = document.getElementById('emailInput').value;
+            if(!email) { alert("Please enter a recipient email."); return; }
+
+            const originalHTML = generateBtn.innerHTML;
+            generateBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i>';
+            generateBtn.disabled = true;
+
+            setTimeout(() => {
+                generateBtn.innerHTML = '<i class="fas fa-check-circle mr-2"></i> Sent Successfully';
+                generateBtn.classList.replace('gradient-bg', 'bg-emerald-500');
+
+                setTimeout(() => {
+                    closeShareModal();
+                    generateBtn.innerHTML = originalHTML;
+                    generateBtn.classList.replace('bg-emerald-500', 'gradient-bg');
+                    generateBtn.disabled = false;
+                    document.getElementById('emailInput').value = '';
+                }, 1500);
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
